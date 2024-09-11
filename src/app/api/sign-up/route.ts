@@ -20,7 +20,7 @@ export async function POST(req: Request, res: Response) {
             );
         }
         const userbyusername = await UserModel.findOne({ username });
-        const verifyCode = Math.floor(1000 + Math.random() * 9000).toString();
+        const verifyCode = Math.floor(Math.random() * 900000 + 100000).toString(); 
 
         const existingUserVerifiedByEmail = await UserModel.findOne({ email});
         if (existingUserVerifiedByEmail) {
