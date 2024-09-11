@@ -33,9 +33,11 @@ export async function POST(req: Request, res: Response) {
                     { status: 400 }
                 );
             } else {
+                await UserModel.deleteOne({ username: username });
                 const hashedPassword = await bcrypt.hash(password, 10);
                 existingUserVerifiedByEmail.password = hashedPassword;
                 existingUserVerifiedByEmail.verifyCode = verifyCode;
+                existingUserVerifiedByEmail.username = username;
                 existingUserVerifiedByEmail.verifyCodeExpiry = new Date(Date.now() + 1 * 60 * 1000);
                 await existingUserVerifiedByEmail.save();
             }
