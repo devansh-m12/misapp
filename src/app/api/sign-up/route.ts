@@ -19,7 +19,7 @@ export async function POST(req: Request, res: Response) {
                 { status: 400 }
             );
         }
-
+        const userbyusername = await UserModel.findOne({ username });
         const verifyCode = Math.floor(1000 + Math.random() * 9000).toString();
 
         const existingUserVerifiedByEmail = await UserModel.findOne({ email});
@@ -33,7 +33,15 @@ export async function POST(req: Request, res: Response) {
                     { status: 400 }
                 );
             } else {
-                await UserModel.deleteOne({ username: username });
+                if(existingUserVerifiedByEmail.email !== userbyusername?.email){
+                    return Response.json(
+                        {
+                            success: false,
+                            message: "Username already exists with different email",
+                        },
+                        { status: 400 }
+                    );
+                }
                 const hashedPassword = await bcrypt.hash(password, 10);
                 existingUserVerifiedByEmail.password = hashedPassword;
                 existingUserVerifiedByEmail.verifyCode = verifyCode;
