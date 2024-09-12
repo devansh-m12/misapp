@@ -15,6 +15,7 @@ import {
   Lock,
   Globe,
 } from 'lucide-react'
+import Navbar from '@/components/Navbar'
 
 export default function InfoHomePage() {
   const [language, setLanguage] = useState('en')
@@ -40,8 +41,9 @@ export default function InfoHomePage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
+      <Navbar />
       <main className="pt-20">
-        <section className="relative flex items-center justify-center text-center px-4">
+        <section className="relative h-screen flex items-center justify-center text-center px-4">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-900 to-purple-900 opacity-50" />
           <motion.div
             initial="initial"

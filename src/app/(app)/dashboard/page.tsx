@@ -93,9 +93,7 @@ export default function Dashboard() {
     setIsSwitchLoading(true)
     try {
       const response = await axios.post<ApiResponse>('/api/accept-messages', { acceptMessages: !acceptMessages })
-      setValue('acceptMessages', {
-        acceptMessages: !acceptMessages
-      })
+      setValue('acceptMessages', !acceptMessages);
       toast({
         title: 'Message status changed',
         description: 'You are now ' + (!acceptMessages ? 'accepting' : 'not accepting') + ' messages',
@@ -143,15 +141,15 @@ export default function Dashboard() {
   if (!session || !session?.user) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
-        <p className="text-2xl">Please login to continue</p>
+        <p className="text-2xl">Please Sign in to continue</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-8">
+    <div className=" bg-gray-900 text-gray-100 p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">User Dashboard</h1>
+        <h1 className="text-4xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">User Dashboard</h1>
 
         <div className="bg-gray-800 rounded-lg p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-4">Your Unique Link</h2>
@@ -177,12 +175,19 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">Message Settings</h2>
             <div className="flex items-center space-x-2">
-              <Switch
-                {...register('acceptMessages')}
-                checked={acceptMessages}
-                onCheckedChange={handleSwitchChange}
-                className="data-[state=checked]:bg-purple-600"
-              />
+              <div className="flex items-center space-x-2">
+                <Switch
+                  {...register('acceptMessages')}
+                  checked={acceptMessages}
+                  onCheckedChange={handleSwitchChange}
+                  className="data-[state=checked]:bg-purple-600"
+                  disabled={isSwitchLoading}
+                  style={{ display: 'inline-block', verticalAlign: 'middle' }}
+                />
+                {isSwitchLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
+              </div>
               <span>
                 Accept Messages: {acceptMessages ? 'On' : 'Off'}
               </span>

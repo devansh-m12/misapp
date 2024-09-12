@@ -26,6 +26,7 @@ export default function Navbar() {
     { name: "Features", href: "/#features" },
     { name: "How It Works", href: "/#how-it-works" },
     { name: "FAQ", href: "/#faq" },
+    { name: "Dashboard", href: "/dashboard" },
   ]
 
   return (
