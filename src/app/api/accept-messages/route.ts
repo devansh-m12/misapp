@@ -77,8 +77,8 @@ export async function GET (req: Request, res: Response){
         return Response.json({
             success: true,
             message: "User found",
-                isAcceptingMessages: foundUser.isAcceptingMessages,
-            }, {status: 200});
+            isAcceptingMessages: foundUser.isAcceptingMessages,
+        }, {status: 200});
     }catch(error){
         console.log("Error getting user status to accept messages :: ", error);
         return Response.json({

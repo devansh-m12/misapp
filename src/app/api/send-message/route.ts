@@ -6,9 +6,8 @@ export async function POST(req: Request, res: Response){
 
     await dbConnect();
 
-    const {username, content} = await req.json();
-
     try{
+        const {username, content} = await req.json();
         const user = await UserModel.findOne({username});
         if(!user){
             return Response.json({
