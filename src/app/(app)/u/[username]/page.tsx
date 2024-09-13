@@ -19,11 +19,17 @@ import {
 } from "@/components/ui/form"
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Send, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { useCompletion } from 'ai/react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 
-export default function VerifyAccount() {
+export default function EnhancedMessageForm() {
   const router = useRouter()
   const { toast } = useToast()
   const params = useParams<{ username: string }>()
@@ -48,7 +54,11 @@ export default function VerifyAccount() {
       complete('');
     } catch (error) {
       console.error('Error fetching messages:', error);
-      // Handle error appropriately
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch suggested messages. Please try again.',
+        variant: 'destructive',
+      })
     }
   };
 
@@ -89,86 +99,146 @@ export default function VerifyAccount() {
     "Innovation distinguishes between a leader and a follower.",
     "The only way to do great work is to love what you do.",
   ]
-  console.log("completion", completion)
-  return (<>
-    <div className="flex bg-gray-900 text-gray-100">
-      {/* Quotes Section */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 bg-gradient-to-br from-purple-900 to-indigo-900">
-        <div className="max-w-md">
-          {quotes.map((quote, index) => (
-            <div key={index} className="mb-8">
-              <p className="text-xl font-light italic text-gray-300">"{quote}"</p>
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 flex flex-col md:flex-row">
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="md:w-1/2 p-8 flex flex-col justify-center"
+      >
+        <Card className="bg-gray-800 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">
+              Inspirational Quotes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[300px] w-full rounded-md border border-gray-700 p-4">
+              {quotes.map((quote, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                  className="mb-4"
+                >
+                  <p className="text-lg font-light italic text-gray-300">"{quote}"</p>
+                </motion.div>
+              ))}
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="md:w-1/2 p-8 flex items-center justify-center"
+      >
+        <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">
+              Send Message
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="compose" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="compose">Compose</TabsTrigger>
+                <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
+              </TabsList>
+              <TabsContent value="compose">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-300">Message</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter your message"
+                              {...field}
+                              className="bg-gray-700 border-gray-600 focus:border-green-500 text-white placeholder-gray-400"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+                    >
+                      {form.formState.isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="mr-2 h-4 w-4" />
+                          Send Message
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </TabsContent>
+              <TabsContent value="suggestions">
+                <div className="space-y-4">
+                  <Button
+                    onClick={fetchSuggestedMessages}
+                    className="w-full"
+                    disabled={isSuggestLoading}
+                  >
+                    {isSuggestLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-2 h-4 w-4" />
+                    )}
+                    Suggest Messages
+                  </Button>
+                  <ScrollArea className="h-[200px] w-full rounded-md border border-gray-700 p-4">
+                    <AnimatePresence>
+                      {parseStringMessages(completion).map((message, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="mb-2"
+                        >
+                          <Badge
+                            variant="secondary"
+                            className="cursor-pointer"
+                            onClick={() => form.setValue('content', message)}
+                          >
+                            {message}
+                          </Badge>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </ScrollArea>
+                </div>
+              </TabsContent>
+            </Tabs>
+            <div className="text-center mt-6">
+              <p className="text-gray-400">
+                Want to get an account yourself?{' '}
+                <Link href={`/sign-up`} className="text-green-400 hover:text-green-300 transition-colors duration-200">
+                  Sign Up
+                </Link>
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* OTP Verification Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-12">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">Send Message</h1>
-            <p className="text-gray-400">Enter the message you want to send to the user</p>
-          </div>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 space-y-6">
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-300">Message</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your message"
-                        {...field}
-                        className="bg-gray-800 border-gray-700 focus:border-green-500 text-white placeholder-gray-500"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
-              >
-                {form.formState.isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  'Send Message'
-                )}
-              </Button>
-            </form>
-          </Form>
-
-          <div className="text-center mt-4">
-            <p className="text-gray-400">
-              Wanna get account yourself?{' '}
-              <Link href={`/sign-up`} className="text-green-400 hover:text-green-300 transition-colors duration-200">
-                Sign Up
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
-    <div>
-    <Button
-            onClick={fetchSuggestedMessages}
-            className="my-4"
-            disabled={isSuggestLoading}
-          >
-            Suggest Messages
-          </Button>
-      {parseStringMessages(completion).map((message, index) => (
-        <p key={index}>{message}</p>
-      ))}
-    </div>
-  </>
   )
 }
