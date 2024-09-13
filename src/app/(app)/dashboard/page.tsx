@@ -11,7 +11,6 @@ import axios, { AxiosError } from 'axios'
 import { ApiResponse } from '@/types/ApiResponse'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { Separator } from '@/components/ui/separator'
 import { Loader2, RefreshCcw, Copy, ChevronDown } from 'lucide-react'
 import { MessageCard } from '@/components/MessageCard'
 import {
@@ -92,7 +91,7 @@ export default function Dashboard() {
   const handleSwitchChange = async () => {
     setIsSwitchLoading(true)
     try {
-      const response = await axios.post<ApiResponse>('/api/accept-messages', { acceptMessages: !acceptMessages })
+      await axios.post<ApiResponse>('/api/accept-messages', { acceptMessages: !acceptMessages })
       setValue('acceptMessages', !acceptMessages);
       toast({
         title: 'Message status changed',

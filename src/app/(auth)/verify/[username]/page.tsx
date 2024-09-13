@@ -129,6 +129,10 @@ export default function VerifyAccount() {
               </Link>
             </p>
           </div>
+
+          <p className="text-sm text-gray-500">
+            Don&apos;t worry, we won&apos;t spam you. We&apos;ll only send you important updates.
+          </p>
         </div>
       </div>
     </div>

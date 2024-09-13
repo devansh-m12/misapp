@@ -49,7 +49,7 @@ export default function SignInAccount() {
     if (response?.url) {
       toast({
         title: 'Welcome back!',
-        description: `You've successfully signed in.`,
+        description: `You&apos;ve successfully signed in.`,
         variant: 'default',
       })
       router.replace('/dashboard')
@@ -117,7 +117,7 @@ export default function SignInAccount() {
         </Form>
         <div className="text-center mt-4">
           <p className="text-gray-400">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/sign-up" className="text-cyan-400 hover:text-cyan-300 transition-colors duration-200">
               Sign Up
             </Link>

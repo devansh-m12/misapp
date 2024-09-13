@@ -26,7 +26,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 
 export default function EnhancedMessageForm() {
@@ -34,15 +33,21 @@ export default function EnhancedMessageForm() {
   const { toast } = useToast()
   const params = useParams<{ username: string }>()
 
-  const [suggestions, setSuggestions] = useState([])
 
   const {
     complete,
     completion,
     isLoading: isSuggestLoading,
-    error,
   } = useCompletion({
     api: '/api/suggest-messages',
+    onError: (error) => {
+      console.error('Error in useCompletion:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch suggested messages. Please try again.',
+        variant: 'destructive',
+      });
+    },
   });
 
   const parseStringMessages = (messageString: string): string[] => {
@@ -124,7 +129,7 @@ export default function EnhancedMessageForm() {
                   transition={{ delay: index * 0.2 }}
                   className="mb-4"
                 >
-                  <p className="text-lg font-light italic text-gray-300">"{quote}"</p>
+                  <p className="text-lg font-light italic text-gray-300">&quot;{quote}&quot;</p>
                 </motion.div>
               ))}
             </ScrollArea>

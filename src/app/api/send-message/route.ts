@@ -2,12 +2,12 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 import {IMessage} from "@/model/User";
 
-export async function POST(req: Request, res: Response){
-
+export async function POST(request: Request) {
+    // Remove 'res' parameter
     await dbConnect();
 
     try{
-        const {username, content} = await req.json();
+        const {username, content} = await request.json();
         const user = await UserModel.findOne({username});
         if(!user){
             return Response.json({
